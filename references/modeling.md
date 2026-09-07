@@ -100,7 +100,43 @@ $$A = \begin{bmatrix}0&1&0&0\\ 0&0&-\dfrac{m^2gl^2}{D}&\dfrac{I+ml^2}{D}\\ 0&0&0
 - **一级/二级倒立摆、龙门吊（吊车防摆）**：均为拉格朗日多坐标推广；吊车注意摆角在加速结束后是**不能控**欠驱动模态需轨迹整形或输入整形。
 - **船舶/车辆航向**：Nomoto 一阶 G(s) = K/(s(Ts+1))。
 
-## 10. 参数表规范
+## 10. 物理世界图示绘制规范（Stage 1 固定产出）
+
+报告第一张图必须是对象的物理示意图（PNG，matplotlib 绘制后落盘），它定义了后续所有符号与正方向的唯一依据。五要素缺一不可：
+
+1. **几何形体**：按真实拓扑画（杆、车、连杆、翼面…），不要用框图代替；
+2. **广义坐标及正方向**：角度用弧线+符号标注（配竖直/水平虚线参考线），位移用坐标轴箭头；
+3. **输入作用位置与方向**：力/力矩箭头，用醒目颜色（如红色）；
+4. **参数标注**：M、m、l…放在对应物体上；
+5. **重力方向** g。
+
+代码骨架（小车倒立摆实例，可复制改造）：
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, Circle, Arc, FancyArrowPatch
+import numpy as np
+
+plt.rcParams['font.family'] = ['Arial Unicode MS', 'PingFang SC',
+                               'Hiragino Sans GB', 'Noto Sans CJK SC', 'sans-serif']
+fig, ax = plt.subplots(figsize=(7.2, 5.0))
+ax.set_aspect('equal'); ax.axis('off')
+# 几何形体: Rectangle / Circle / plot；角度: 虚线参考线 + Arc(theta1, theta2)
+# 箭头: FancyArrowPatch(起, 止, arrowstyle='-|>', mutation_scale=17, color=...)
+# 符号标注: ax.text(x, y, r'$M$')  一律用 mathtext，不用 Unicode 数学字符
+fig.savefig('docs/<对象>_schematic.png', dpi=150, bbox_inches='tight', facecolor='white')
+```
+
+注意事项：
+
+- 中文标签必须配置 CJK 字体（macOS: Arial Unicode MS / Hiragino Sans GB；Linux: Noto Sans CJK / WenQuanYi），生成后**读图目检**确认无"豆腐块"、几何关系与正方向和文字描述一致、标注无遮挡；
+- 符号一律用 mathtext（`r'$\theta$'`），与报告公式记号严格一致；
+- 角度参考：先画虚线（竖直向上或水平），再画 Arc，θ 标注放在弧线与摆杆之间空白处，勿压线；
+- 图落盘后在报告正文用相对路径引用（GitHub 原生渲染 PNG）。
+
+## 11. 参数表规范
 
 报告 Stage 1 末尾必须给：
 
