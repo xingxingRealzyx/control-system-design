@@ -70,15 +70,26 @@ pip3 install --user numpy scipy
 
 **① 状态空间**（拉格朗日建模 → 顶点线性化，`D=(M+m)(I+ml²)−m²l²`）：
 
-$$\dot x = Ax + Bu,\quad x=\begin{bmatrix}x\\\dot x\\\theta\\\dot\theta\end{bmatrix},\quad
-A=\begin{bmatrix}0&1&0&0\\0&0&-0.7178&0.9756\\0&0&0&1\\0&0&15.7917&0\end{bmatrix},\quad
-B=\begin{bmatrix}0\\0.9756\\0\\-1.4634\end{bmatrix}$$
+$$
+\dot x = Ax + Bu,\quad
+x=\begin{bmatrix} x \\ \dot x \\ \theta \\ \dot\theta \end{bmatrix},\quad
+A=\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & -0.7178 & 0.9756 \\
+0 & 0 & 0 & 1 \\
+0 & 0 & 15.7917 & 0
+\end{bmatrix},\quad
+B=\begin{bmatrix} 0 \\ 0.9756 \\ 0 \\ -1.4634 \end{bmatrix}
+$$
 
 **② 能控性/能观性**：能控性矩阵秩 4/4，能观性矩阵秩 4/4，完全能控能观——LQR 与观测器均可行。开环极点 `+3.97, 0, 0, −3.97`（倒立点不稳定）。
 
 **③ 控制器**（Bryson 初值 + 手动加权摆角，CARE 数值解）：
 
-$$Q=\mathrm{diag}(1,1,100,10),\ R=1\ \Rightarrow\ K=\begin{bmatrix}-1.00 & -2.37 & -33.38 & -9.21\end{bmatrix}$$
+$$
+Q=\mathrm{diag}(1,\ 1,\ 100,\ 10),\quad R=1\quad\Rightarrow\quad
+K=\begin{bmatrix} -1.00 & -2.37 & -33.38 & -9.21 \end{bmatrix}
+$$
 
 ```mermaid
 flowchart LR
