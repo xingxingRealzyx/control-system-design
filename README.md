@@ -64,6 +64,48 @@ pip3 install --user numpy scipy
 
 输出语言不指定时**默认 C**（C99、无动态内存、参数/状态分离、init+update 接口、限幅与 NaN 防护）。
 
+## 端到端示例：小车倒立摆 LQR 镇定
+
+以下为仓库自带演示的完整产出（`M=1.0kg, m=0.1kg, l=0.5m`，初始偏角 10°），全流程自动生成。
+
+**① 状态空间**（拉格朗日建模 → 顶点线性化，`D=(M+m)(I+ml²)−m²l²`）：
+
+$$\dot x = Ax + Bu,\quad x=\begin{bmatrix}x\\\dot x\\\theta\\\dot\theta\end{bmatrix},\quad
+A=\begin{bmatrix}0&1&0&0\\0&0&-0.7178&0.9756\\0&0&0&1\\0&0&15.7917&0\end{bmatrix},\quad
+B=\begin{bmatrix}0\\0.9756\\0\\-1.4634\end{bmatrix}$$
+
+**② 能控性/能观性**：能控性矩阵秩 4/4，能观性矩阵秩 4/4，完全能控能观——LQR 与观测器均可行。开环极点 `+3.97, 0, 0, −3.97`（倒立点不稳定）。
+
+**③ 控制器**（Bryson 初值 + 手动加权摆角，CARE 数值解）：
+
+$$Q=\mathrm{diag}(1,1,100,10),\ R=1\ \Rightarrow\ K=\begin{bmatrix}-1.00 & -2.37 & -33.38 & -9.21\end{bmatrix}$$
+
+```mermaid
+flowchart LR
+    P["小车+倒立摆<br/>（非线性模型）"] -->|"x = [x, ẋ, θ, θ̇]ᵀ"| K["LQR 状态反馈<br/>u = −Kx"]
+    K --> sat["执行器饱和<br/>|u| ≤ 20 N"]
+    sat -->|"u [N]"| P
+```
+
+**④ 非线性闭环仿真**（RK4 对象 + Ts=10ms 离散控制器，从 10° 初始偏角自由释放）：
+
+![倒立摆 LQR 镇定闭环仿真](docs/cartpole_closedloop.png)
+
+| 指标 | 结果 |
+|---|---|
+| 摆角终值 | 0.017°（初值 10°） |
+| 调节时间（2%） | 5.65 s（与最慢闭环模态 −0.67 一致） |
+| 超调（调节过程） | 31.4%（摆杆下冲 −3.4°） |
+| 控制量峰值 | 5.83 N（限幅 ±20 N，未触饱和） |
+| 闭环极点 | −6.51, −3.33, −0.67±0.47j（全部左半平面） |
+
+**复现**：
+
+```bash
+python3 scripts/linhelper.py demo            # 建模→能控能观→LQR→极点配置→离散化
+python3 scripts/closedloop_sim_template.py   # 非线性闭环仿真 → 曲线与指标
+```
+
 ## 输出物
 
 每次运行产出一份十章结构的设计报告：
