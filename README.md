@@ -68,7 +68,53 @@ pip3 install --user numpy scipy
 
 以下为仓库自带演示的完整产出（`M=1.0kg, m=0.1kg, l=0.5m`，初始偏角 10°），全流程自动生成。
 
-**① 状态空间**（拉格朗日建模 → 顶点线性化，`D=(M+m)(I+ml²)−m²l²`）：
+**① 物理模型与坐标定义**
+
+![小车倒立摆物理模型](docs/cartpole_schematic.png)
+
+| 符号 | 含义 | 取值 | 单位 |
+|---|---|---|---|
+| $M$ / $m$ | 小车 / 摆杆质量 | 1.0 / 0.1 | kg |
+| $l$ | 转轴到质心距离 | 0.5 | m |
+| $I$ | 摆杆绕质心转动惯量（均质杆 $ml^2/3$） | 0.0083 | kg·m² |
+| $\theta$ | 摆杆与竖直向上夹角（倒立点为 0） | 初始 10° | rad |
+| $F$ | 小车水平推力（控制输入） | — | N |
+
+**② 物理建模与状态空间推导**
+
+摆杆质心位置 $x_p = x + l\sin\theta$，$y_p = l\cos\theta$。系统动能与势能：
+
+$$
+T=\frac{1}{2}M\dot x^2+\frac{1}{2}m(\dot x_p^2+\dot y_p^2)+\frac{1}{2}I\dot\theta^2,\qquad
+V=mgl\cos\theta
+$$
+
+代入拉格朗日方程（$L=T-V$，广义坐标 $q=[x,\theta]$）：
+
+$$
+\frac{d}{dt}\frac{\partial L}{\partial \dot q_i}-\frac{\partial L}{\partial q_i}=Q_i
+$$
+
+整理得非线性动力学方程：
+
+$$
+(M+m)\ddot x + ml\ddot\theta\cos\theta - ml\dot\theta^2\sin\theta = F
+$$
+
+$$
+(I+ml^2)\ddot\theta + ml\ddot x\cos\theta - mgl\sin\theta = 0
+$$
+
+在倒立点 $\theta=0$ 处线性化（$\cos\theta\approx1$，$\sin\theta\approx\theta$，略去 $\dot\theta^2$ 项），联立消元：
+
+$$
+\ddot x=\frac{(I+ml^2)F-m^2 gl^2 \theta}{D},\qquad
+\ddot\theta=\frac{-mlF+(M+m)mgl \theta}{D}
+$$
+
+其中 $D=(M+m)(I+ml^2)-m^2l^2$。
+
+**③ 状态空间**（取 $x=[x,\dot x,\theta,\dot\theta]^T$，代入数值）：
 
 <!-- 注意：GitHub 的 markdown 管线会吃掉数学块中的一层反斜杠转义，矩阵换行必须写 \\\\ 才能让 MathJax 收到 \\ -->
 $$
@@ -83,9 +129,9 @@ A=\begin{bmatrix}
 B=\begin{bmatrix} 0 \\\\ 0.9756 \\\\ 0 \\\\ -1.4634 \end{bmatrix}
 $$
 
-**② 能控性/能观性**：能控性矩阵秩 4/4，能观性矩阵秩 4/4，完全能控能观——LQR 与观测器均可行。开环极点 `+3.97, 0, 0, −3.97`（倒立点不稳定）。
+**④ 能控性/能观性**：能控性矩阵秩 4/4，能观性矩阵秩 4/4，完全能控能观——LQR 与观测器均可行。开环极点 `+3.97, 0, 0, −3.97`（倒立点不稳定）。
 
-**③ 控制器**（Bryson 初值 + 手动加权摆角，CARE 数值解）：
+**⑤ 控制器**（Bryson 初值 + 手动加权摆角，CARE 数值解）：
 
 $$
 Q=\mathrm{diag}(1,\ 1,\ 100,\ 10),\quad R=1\quad\Rightarrow\quad
@@ -99,7 +145,7 @@ flowchart LR
     sat -->|"u [N]"| P
 ```
 
-**④ 非线性闭环仿真**（RK4 对象 + Ts=10ms 离散控制器，从 10° 初始偏角自由释放）：
+**⑥ 非线性闭环仿真**（RK4 对象 + Ts=10ms 离散控制器，从 10° 初始偏角自由释放）：
 
 ![倒立摆 LQR 镇定闭环仿真](docs/cartpole_closedloop.png)
 
