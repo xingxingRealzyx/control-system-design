@@ -70,16 +70,17 @@ pip3 install --user numpy scipy
 
 **① 状态空间**（拉格朗日建模 → 顶点线性化，`D=(M+m)(I+ml²)−m²l²`）：
 
+<!-- 注意：GitHub 的 markdown 管线会吃掉数学块中的一层反斜杠转义，矩阵换行必须写 \\\\ 才能让 MathJax 收到 \\ -->
 $$
 \dot x = Ax + Bu,\quad
-x=\begin{bmatrix} x \\ \dot x \\ \theta \\ \dot\theta \end{bmatrix},\quad
+x=\begin{bmatrix} x \\\\ \dot x \\\\ \theta \\\\ \dot\theta \end{bmatrix},\quad
 A=\begin{bmatrix}
-0 & 1 & 0 & 0 \\
-0 & 0 & -0.7178 & 0.9756 \\
-0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 0 \\\\
+0 & 0 & -0.7178 & 0.9756 \\\\
+0 & 0 & 0 & 1 \\\\
 0 & 0 & 15.7917 & 0
 \end{bmatrix},\quad
-B=\begin{bmatrix} 0 \\ 0.9756 \\ 0 \\ -1.4634 \end{bmatrix}
+B=\begin{bmatrix} 0 \\\\ 0.9756 \\\\ 0 \\\\ -1.4634 \end{bmatrix}
 $$
 
 **② 能控性/能观性**：能控性矩阵秩 4/4，能观性矩阵秩 4/4，完全能控能观——LQR 与观测器均可行。开环极点 `+3.97, 0, 0, −3.97`（倒立点不稳定）。
