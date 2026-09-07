@@ -82,14 +82,14 @@ pip3 install --user numpy scipy
 
 **② 物理建模与状态空间推导**
 
-摆杆质心位置 $x_p = x + l\sin\theta$，$y_p = l\cos\theta$。系统动能与势能：
+摆杆质心位置为 $x_p = x + l\sin\theta$ 和 $y_p = l\cos\theta$。系统动能与势能：
 
 $$
 T=\frac{1}{2}M\dot x^2+\frac{1}{2}m(\dot x_p^2+\dot y_p^2)+\frac{1}{2}I\dot\theta^2,\qquad
 V=mgl\cos\theta
 $$
 
-代入拉格朗日方程（$L=T-V$，广义坐标 $q=[x,\theta]$）：
+代入拉格朗日方程（拉格朗日函数 $L=T-V$，广义坐标 $q=[x,\theta]$）：
 
 $$
 \frac{d}{dt}\frac{\partial L}{\partial \dot q_i}-\frac{\partial L}{\partial q_i}=Q_i
@@ -105,7 +105,7 @@ $$
 (I+ml^2)\ddot\theta + ml\ddot x\cos\theta - mgl\sin\theta = 0
 $$
 
-在倒立点 $\theta=0$ 处线性化（$\cos\theta\approx1$，$\sin\theta\approx\theta$，略去 $\dot\theta^2$ 项），联立消元：
+在倒立点 $\theta=0$ 处线性化（近似取 $\cos\theta\approx1$ 和 $\sin\theta\approx\theta$，并略去 $\dot\theta^2$ 项），联立消元：
 
 $$
 \ddot x=\frac{(I+ml^2)F-m^2 gl^2 \theta}{D},\qquad
@@ -116,7 +116,7 @@ $$
 
 **③ 状态空间**（取 $x=[x,\dot x,\theta,\dot\theta]^T$，代入数值）：
 
-<!-- 注意：GitHub 的 markdown 管线会吃掉数学块中的一层反斜杠转义，矩阵换行必须写 \\\\ 才能让 MathJax 收到 \\ -->
+<!-- 注意：GitHub 的 markdown 管线会吃掉数学块中的一层反斜杠转义——矩阵换行必须写 \\\\ 才能让 MathJax 收到 \\；行内公式开头的 $ 前不得紧贴全角标点（，。（等），需补空格；公式内勿用 \, -->
 $$
 \dot x = Ax + Bu,\quad
 x=\begin{bmatrix} x \\\\ \dot x \\\\ \theta \\\\ \dot\theta \end{bmatrix},\quad
